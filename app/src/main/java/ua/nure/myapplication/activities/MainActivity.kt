@@ -18,9 +18,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import ua.nure.myapplication.R
-import ua.nure.myapplication.adapters.ItemsAdapter
+import ua.nure.myapplication.adapters.WorksInFacilityAdapter
 import ua.nure.myapplication.api.RetrofitClient
-import ua.nure.myapplication.api.models.UserItems
+import ua.nure.myapplication.api.models.UserWorks
 import ua.nure.myapplication.api.responses.DetailResponse
 import ua.nure.myapplication.decorations.SpacesItemDecoration
 import ua.nure.myapplication.dialogs.SimpleDialog
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var lsMain: FrameLayout
     private var lang: String? = null
-    private var userItems: UserItems? = null
+    private var userWorks: UserWorks? = null
     private lateinit var rvItems: RecyclerView
     private lateinit var srlMain: SwipeRefreshLayout
 
@@ -55,10 +55,10 @@ class MainActivity : AppCompatActivity() {
         srlMain = findViewById(R.id.srl_main)
         srlMain.setOnRefreshListener {
             srlMain.isRefreshing = true
-            getItemsList()
+            getWorksList()
         }
 
-        getItemsList()
+        getWorksList()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -102,24 +102,24 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun getItemsList() {
-        val call = RetrofitClient.getInstance(this).api.getUserItems()
+    private fun getWorksList() {
+        val call = RetrofitClient.getInstance(this).api.getUserWorks()
 
-        call.enqueue(object : Callback<UserItems> {
-            override fun onFailure(call: Call<UserItems>, t: Throwable) {
+        call.enqueue(object : Callback<UserWorks> {
+            override fun onFailure(call: Call<UserWorks>, t: Throwable) {
                 Toasty.error(
                     this@MainActivity,
                     t.message!!,
                     Toasty.LENGTH_LONG
                 ).show()
-                getItemsList()
+                getWorksList()
                 srlMain.isRefreshing = false
                 lsMain.visibility = View.GONE
             }
 
-            override fun onResponse(call: Call<UserItems>, response: Response<UserItems>) {
+            override fun onResponse(call: Call<UserWorks>, response: Response<UserWorks>) {
                 if (response.body() != null) {
-                    userItems = response.body()
+                    userWorks = response.body()
                     initItemsRecyclerView()
                 } else {
                     Toasty.error(
@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initItemsRecyclerView() {
-        val adapter = ItemsAdapter(this, userItems!!.assigned_items)
+        val adapter = WorksInFacilityAdapter(this, userWorks!!.WorkInFacility)
         rvItems.adapter = adapter
     }
 
@@ -161,40 +161,14 @@ class MainActivity : AppCompatActivity() {
 
         lsMain.visibility = View.VISIBLE
 
-        val call = RetrofitClient.getInstance(this).api.logout()
-
-        call.enqueue(object : Callback<DetailResponse?> {
-            override fun onFailure(call: Call<DetailResponse?>, t: Throwable) {
-                lsMain.visibility = View.GONE
-                Toasty.error(
-                    this@MainActivity,
-                    t.message!!,
-                    Toasty.LENGTH_LONG
-                ).show()
-            }
-
-            override fun onResponse(
-                call: Call<DetailResponse?>,
-                response: Response<DetailResponse?>
-            ) {
-                if (response.body() != null) {
-                    SharedPrefManager.getInstance(this@MainActivity).logout()
-                    val intent = Intent(this@MainActivity, AuthorizationActivity::class.java)
-                    intent.putExtra(
-                        "lang",
-                        SharedPrefManager.getInstance(this@MainActivity).getLanguage(null)
-                    )
-                    startActivity(intent)
-                    finish()
-                } else {
-                    Toasty.error(
-                        this@MainActivity,
-                        getString(R.string.something_wrong),
-                        Toasty.LENGTH_LONG
-                    ).show()
-                }
-                lsMain.visibility = View.GONE
-            }
-        })
+        SharedPrefManager.getInstance(this@MainActivity).logout()
+        val intent = Intent(this@MainActivity, AuthorizationActivity::class.java)
+        intent.putExtra(
+            "lang",
+            SharedPrefManager.getInstance(this@MainActivity).getLanguage(null)
+        )
+        startActivity(intent)
+        finish()
+        lsMain.visibility = View.GONE
     }
 }

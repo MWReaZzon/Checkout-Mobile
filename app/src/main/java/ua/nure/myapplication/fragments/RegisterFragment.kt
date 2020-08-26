@@ -21,6 +21,7 @@ import ua.nure.myapplication.activities.MainActivity
 import ua.nure.myapplication.api.RetrofitClient
 import ua.nure.myapplication.api.requests.RegisterRequest
 import ua.nure.myapplication.api.responses.DetailResponse
+import ua.nure.myapplication.api.responses.LoginResponse
 import ua.nure.myapplication.helpers.CustomRegex
 import ua.nure.myapplication.storage.SharedPrefManager
 import java.time.LocalDate
@@ -73,7 +74,7 @@ class RegisterFragment : Fragment(), View.OnClickListener {
             lsAuth.visibility = View.VISIBLE
             val call = RetrofitClient.getInstance(activity!!).api.register(request)
 
-            call.enqueue(object : Callback<DetailResponse> {
+            call.enqueue(object : Callback<DetailResponse>{
                 override fun onFailure(call: Call<DetailResponse>, t: Throwable) {
                     lsAuth.visibility = View.GONE
                     Toasty.error(
@@ -88,7 +89,14 @@ class RegisterFragment : Fragment(), View.OnClickListener {
                     response: Response<DetailResponse>
                 ) {
                     if (response.body() != null) {
-                        Toasty.info(activity!!, response.body()!!.detail, Toasty.LENGTH_LONG).show()
+                        SharedPrefManager.getInstance(activity!!).saveToken(response.body()!!.access_token)
+                        val intent = Intent(activity!!, MainActivity::class.java)
+                        intent.putExtra(
+                            "lang",
+                            SharedPrefManager.getInstance(activity!!).getLanguage(null)
+                        )
+                        startActivity(intent)
+                        activity!!.finish()
                     } else {
                         Toasty.error(
                             activity!!,

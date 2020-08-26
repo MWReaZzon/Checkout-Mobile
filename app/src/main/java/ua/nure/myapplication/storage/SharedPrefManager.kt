@@ -46,7 +46,7 @@ class SharedPrefManager(private val mCtx: Context) {
             Context.MODE_PRIVATE)
         var token:String? = sharedPreferences.getString(tokenKey,null)
         if(token != null){
-            token = "Token $token"
+            token = "Bearer $token"
         }
         return token
     }

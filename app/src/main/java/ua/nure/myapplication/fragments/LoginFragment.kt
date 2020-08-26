@@ -89,7 +89,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
                     response: Response<LoginResponse>
                 ) {
                     if (response.body() != null) {
-                        SharedPrefManager.getInstance(activity!!).saveToken(response.body()!!.key)
+                        SharedPrefManager.getInstance(activity!!).saveToken(response.body()!!.access_token)
                         val intent = Intent(activity!!, MainActivity::class.java)
                         intent.putExtra(
                             "lang",
@@ -121,10 +121,10 @@ class LoginFragment : Fragment(), View.OnClickListener {
                 return false
             }
 
-            !usernameRegex.matches(username) -> {
-                etUsername.error = getString(R.string.wrong_username)
-                return false
-            }
+            //!usernameRegex.matches(username) -> {
+            //    etUsername.error = getString(R.string.wrong_username)
+            //    return false
+            //}
         }
 
         when {

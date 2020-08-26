@@ -5,16 +5,10 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewParent
 import android.widget.*
 import androidx.viewpager.widget.ViewPager
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ua.nure.myapplication.R
 import ua.nure.myapplication.adapters.AuthorizationPagerAdapter
-import ua.nure.myapplication.api.RetrofitClient
-import ua.nure.myapplication.api.models.UserItems
 import ua.nure.myapplication.helpers.LocaleHelper
 import ua.nure.myapplication.helpers.restartActivity
 
