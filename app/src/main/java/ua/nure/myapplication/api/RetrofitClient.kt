@@ -23,7 +23,6 @@ class RetrofitClient(val lang: String, val auth: String?) {
                 val request = requestBuilder
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Accept-Language", lang)
-                    .addHeader("Connection", "close")
 
                 if (auth != null) {
                     request.addHeader("Authorization", auth)
